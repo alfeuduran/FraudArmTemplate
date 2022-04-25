@@ -117,11 +117,13 @@
       "eventHubName": "[concat(parameters('deploymentPrefixName'),uniqueString(resourceGroup().id))]",
       "tenantId": "[subscription().tenantId]",
       "applicationInsightsName": "[concat(parameters('deploymentPrefixName'),uniqueString(resourceGroup().id))]",
+      "applicationInsightsNameML": "[concat('appml',uniqueString(resourceGroup().id))]",
       "hostingPlanName":"[concat(parameters('deploymentPrefixName'),uniqueString(resourceGroup().id))]",
       "storageAccountid": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
       "cosmosName":"[concat(parameters('cosmosDBName'),uniqueString(resourceGroup().id))]",
       "cosmosGremlinName":"[concat(parameters('deploymentPrefixName'),uniqueString(resourceGroup().id))]",
       "SynapseWorkspaceName":"[concat('sy',uniqueString(resourceGroup().id))]",
+      "containerRegistryName":"[concat('registry',uniqueString(resourceGroup().id))]",
       "SynapseManagedResourceGroupName":"[concat(parameters('deploymentPrefixName'),uniqueString(resourceGroup().id))]",
       "dataLakeStorageName": "[if(empty(parameters('storageAccountName')), replace(tolower(parameters('workspaceName')),'-',''), tolower(parameters('storageAccountName')))]",
       "sqlPoolName":"[concat('syPool',uniqueString(resourceGroup().id))]"
@@ -1024,10 +1026,60 @@
           }
         }
       ]
-    }
+    },
+    {
+            "type": "Microsoft.ContainerRegistry/registries",
+            "apiVersion": "2019-05-01",
+            "name": "[variables('containerRegistryName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "adminUserEnabled": true,
+                "networkRuleSet": "[json('null')]"
+            }
+    },
+    {
+            "type": "Microsoft.Insights/components",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[variables('applicationInsightsNameML')]",
+            "location": "[parameters('location')]",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web"
+            }
+    },
+    {
+            "type": "Microsoft.MachineLearningServices/workspaces",
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('workspaceName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]", // e isso ou variables?
+                "[resourceId('Microsoft.Insights/components', variables('applicationInsightsNameML'))]",
+                "[resourceId('Microsoft.ContainerRegistry/registries', variables('containerRegistryName'))]"
+            ],
+            "identity": {
+                "type": "userAssigned",
+                "userAssignedIdentities": "[json('null')]"
+            },
+            "sku": {
+                "tier": "[parameters('sku')]",
+                "name": "[parameters('sku')]"
+            },
+            "properties": {
+                "friendlyName": "[parameters('workspaceName')]",
+                "storageAccount": "[variables('storageAccountName')]",
+                // "keyVault": "[variables('keyVault')]",
+                "applicationInsights": "[variables('applicationInsightsNameML')]",
+                "containerRegistry": "[variables('containerRegistryName')]",
+                "primaryUserAssignedIdentity": "[json('null')]",
+                "systemDatastoresAuthMode": "[json('null')]"
+            }
+        }
 
-        
-        
+      
       ]
 
 }
