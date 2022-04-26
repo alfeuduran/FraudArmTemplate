@@ -1034,7 +1034,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "relativePath": "mltemplate.json"
+          "uri": "https://raw.githubusercontent.com/alfeuduran/FraudArmTemplate/main/arm_template/mltemplate.json"
         },
         "parameters": {
           "workspaceName": {
@@ -1045,9 +1045,6 @@
           },
           "resourceGroupName": {
             "value": "fraud-alfeu"
-          },
-          "tagValues": {
-            "value": "[json('null')]"
           }
         }
       }
