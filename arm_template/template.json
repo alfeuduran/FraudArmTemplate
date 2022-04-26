@@ -1028,58 +1028,31 @@
       ]
     },
     {
-            "type": "Microsoft.ContainerRegistry/registries",
-            "apiVersion": "2019-05-01",
-            "name": "[variables('containerRegistryName')]",
-            "location": "[parameters('location')]",
-            "sku": {
-                "name": "Standard"
-            },
-            "properties": {
-                "adminUserEnabled": true,
-                "networkRuleSet": "[json('null')]"
-            }
-    },
-    {
-            "type": "Microsoft.Insights/components",
-            "apiVersion": "2018-05-01-preview",
-            "name": "[variables('applicationInsightsNameML')]",
-            "location": "[parameters('location')]",
-            "kind": "web",
-            "properties": {
-                "Application_Type": "web"
-            }
-    },
-    {
-            "type": "Microsoft.MachineLearningServices/workspaces",
-            "apiVersion": "2020-06-01",
-            "name": "[parameters('workspaceName')]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]", // e isso ou variables?
-                "[resourceId('Microsoft.Insights/components', variables('applicationInsightsNameML'))]",
-                "[resourceId('Microsoft.ContainerRegistry/registries', variables('containerRegistryName'))]"
-            ],
-            "identity": {
-                "type": "userAssigned",
-                "userAssignedIdentities": "[json('null')]"
-            },
-            "sku": {
-                "tier": "[parameters('sku')]",
-                "name": "[parameters('sku')]"
-            },
-            "properties": {
-                "friendlyName": "[parameters('workspaceName')]",
-                "storageAccount": "[variables('storageAccountName')]",
-                // "keyVault": "[variables('keyVault')]",
-                "applicationInsights": "[variables('applicationInsightsNameML')]",
-                "containerRegistry": "[variables('containerRegistryName')]",
-                "primaryUserAssignedIdentity": "[json('null')]",
-                "systemDatastoresAuthMode": "[json('null')]"
-            }
+      "name": "linkedTemplate",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "relativePath": "mltemplate.json"
+        },
+        "parameters": {
+          "workspaceName": {
+            "value": "[variables('storageAccountName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "resourceGroupName": {
+            "value": "fraud-alfeu"
+          },
+          "tagValues": {
+            "value": "[json('null')]"
+          }
         }
+      }
+    }
 
-      
       ]
 
 }
