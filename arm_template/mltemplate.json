@@ -122,7 +122,7 @@
         },
         "keyVaultName": {
             "type": "string",
-            "defaultValue": "[concat('kv', uniqueString(parameters('resourceGroupName'), parameters('workspaceName')))]",
+            "defaultValue": "[concat('kvfraud', uniqueString(parameters('resourceGroupName'), parameters('workspaceName')))]",
             "metadata": {
                 "description": "Name of the key vault."
             }
