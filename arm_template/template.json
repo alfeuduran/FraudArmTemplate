@@ -1027,6 +1027,7 @@
         }
       ]
     },
+    // test
     {
       "name": "linkedTemplate",
       "type": "Microsoft.Resources/deployments",
